@@ -1,24 +1,10 @@
-# pokedex-app
+# Pokedex App
+Conoce las carácteristicas de cada pokemón y crea tu lista de favoritos. [Demo](https://pokemon-vue-557e8.web.app)
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Tecnologías usadas
+ - [PokeAPI](https://pokeapi.co/)
+ - Vue 3
+ - Vue-router 4
+ - Bootstrap 5
+ - Axios
+ - Firebase-tools
