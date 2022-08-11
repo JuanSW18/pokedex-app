@@ -21,7 +21,7 @@
             </button>
         </div>
     </div>
-    <generic-modal v-show="showModal" :pokemonData="pokemonData" @clicked="showModal = false"></generic-modal>
+    <generic-modal v-show="showModal" :info="pokemonData" @clicked="showModal = false"></generic-modal>
 </template>
 
 <style>
@@ -49,13 +49,7 @@
                 pokemonName: '',
                 pokemonList: [],
                 pokemonFullList: [],
-                pokemonData: {
-                    'name': '',
-                    'weight': '',
-                    'height': '',
-                    'types': '',
-                    'class': ''
-                }
+                pokemonData: {},
             }
         },
         created() {
@@ -99,13 +93,8 @@
                 this.isLoading = true;
                 new PokedexService().getPokemonDetail(pokemon.name).then( 
                     (response) => {
-                        const types = [];
-                        response.data.types.forEach( item => types.push(item.type.name));
-                        this.pokemonData.types = types.join(', ');
-                        this.pokemonData.weight = response.data.weight;
-                        this.pokemonData.height = response.data.height;
-                        this.pokemonData.name = pokemon.name;
-                        this.pokemonData.class = pokemon.cssClass;
+                        response.data['class'] = pokemon.cssClass;
+                        this.pokemonData = response.data
                         setTimeout( () => {
                             this.isLoading = false;
                             this.showModal = true;

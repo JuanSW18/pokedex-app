@@ -28,13 +28,29 @@
     export default {
         name: 'GenericModal',
         props: {
-            pokemonData: {
-                'name': '',
-                'weight': '',
-                'height': '',
-                'types': '',
-                'class': ''
+            info: Object
+        },
+        data() {
+            return {
+                pokemonData: {
+                    'name': '',
+                    'weight': '',
+                    'height': '',
+                    'types': '',
+                    'class': ''
+                }   
             }
+        },
+        watch: {
+          info() {
+            const types = [];
+            this.info.types.forEach(item => types.push(item.type.name));
+            this.pokemonData.types = types.join(', ');
+            this.pokemonData.weight = this.info.weight;
+            this.pokemonData.height = this.info.height;
+            this.pokemonData.name = this.info.name;
+            this.pokemonData.class = this.info.class;
+          }  
         },
         methods: {
             close: function () {
