@@ -22,6 +22,7 @@
 
 <style>
   @import '../static/style.css';
+  @import '../static/generic-modal.component.css';
 </style>
 
 <script>

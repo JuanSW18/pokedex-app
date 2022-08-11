@@ -4,6 +4,10 @@
     </div>
 </template>
 
+<style>
+  @import '../static/loading.component.css';
+</style>
+
 <script>
     export default {
         name: 'LoadingBg'
