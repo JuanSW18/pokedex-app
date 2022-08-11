@@ -6,35 +6,17 @@
             <input type="text" class="form-control border-0" aria-label="Pokemon name" placeholder="Search" v-model="pokemonName" v-on:input="searchPokemon()">
         </div>
         <div>
-            <div v-if="showAll">
-                <div class="d-flex flex-row justify-content-between card my-2" v-for="pokemon in pokemonList" :key="pokemon.name">
-                    <p class="pokemonName my-auto ms-4" @click="showPokemonInfo(pokemon)">{{ pokemon.name }}</p>
-                    <div class="my-2 me-4" :class="pokemon.cssClass" @click="addFavorite(pokemon)"></div>
-                </div>
-            </div>
-            <div v-else-if="!showAll && searchStarted && searchResult.length !== 0">
-                <div class="d-flex flex-row justify-content-between card my-2" v-for="pokemon in searchResult" :key="pokemon.name">
-                   <p class="pokemonName my-auto ms-4" @click="showPokemonInfo(pokemon)">{{ pokemon.name }}</p>
-                    <div class="my-2 me-4" :class="pokemon.cssClass" @click="addFavorite(pokemon)"></div>
-                </div>
-            </div>
-            <div class="my-4" v-else-if="searchStarted && searchResult.length === 0">
-                <h1 class="fw-bold">Uh-oh!</h1>
-                <h3 class="info">You look lost on your journey!</h3>
-                <router-link class="btn btn-danger rounded-pill" to="/">Go back home</router-link>
-            </div>
-            <div v-else>
-                <div class="d-flex flex-row justify-content-between card my-2" v-for="pokemon in favoriteList" :key="pokemon.name">
-                    <p class="pokemonName my-auto ms-4" @click="showPokemonInfo(pokemon)">{{ pokemon.name }}</p>
-                    <div class="my-2 me-4" :class="pokemon.cssClass" @click="addFavorite(pokemon)"></div>
-                </div>
-            </div>
+            <pokemon-item v-for="pokemon in pokemonList"
+                :key="pokemon"
+                :info="pokemon"
+                @show-info="showPokemonInfo">
+            </pokemon-item>
         </div>
-        <div class="btn-group" v-if="!searchStarted || searchResult.length !== 0">
-            <button class="btn rounded-pill me-4" :class="!searchStarted && showAll === true ? 'btn-danger' : 'btn-secondary'" @click="switchShowAll(true)">
+        <div class="btn-group">
+            <button class="btn rounded-pill me-4" :class="isBtnActive('primary')" @click="showFullList()">
                 All
             </button>
-            <button class="btn rounded-pill ms-4" :class="!searchStarted && showAll !== true ? 'btn-danger' : 'btn-secondary'" @click="switchShowAll(false)">
+            <button class="btn rounded-pill ms-4" :class="isBtnActive('secondary')" @click="showFavoriteList()">
                 Favorites
             </button>
         </div>
@@ -50,22 +32,23 @@
     import PokedexService from '../services/pokedex.service'
     import GenericModal from '../components/GenericModal.vue'
     import LoadingBg from '../components/LoadingBg.vue'
+    import PokemonItem from '../components/PokemonItem.vue'
 
     export default {
         name: 'Search',
         components: {
             GenericModal,
-            LoadingBg
+            LoadingBg,
+            PokemonItem
         },
         data() {
             return {
-                isLoading: false,
-                pokemonList: [],
-                searchResult: [],
-                showAll: true,
-                pokemonName: '',
-                searchStarted: false,
                 showModal: false,
+                isLoading: false,
+                btnActive: '',
+                pokemonName: '',
+                pokemonList: [],
+                pokemonFullList: [],
                 pokemonData: {
                     'name': '',
                     'weight': '',
@@ -78,41 +61,39 @@
         created() {
             new PokedexService().getPokemonList().then(
                 (response) => {
-                    this.pokemonList = response.data.results;
-                    this.pokemonList.forEach( item => item.cssClass = 'star-default');
+                    this.pokemonFullList = response.data.results;
+                    this.pokemonFullList.forEach( item => item.cssClass = 'star-default');
+                    this.pokemonList = [... this.pokemonFullList];
                 },
                 () => {
                     console.error("Pokedex API conection error!");
                 }
             );
         },
-        computed: {
-            favoriteList: function () {
-                return this.pokemonList.filter( item => item.cssClass === 'star-yellow' );
-            }
-        },
+        computed: {},
         methods: {
-            addFavorite: function (pokemon) {
-                if (pokemon.cssClass === 'star-default') {
-                    pokemon.cssClass = 'star-yellow';
-                } else {
-                    pokemon.cssClass = 'star-default';
-                }
+            isBtnActive(btn) {
+                const cssStyle = (this.btnActive === btn) ? 'btn-danger' : 'btn-secondary';
+                return cssStyle;
+            },
+            showFullList() {
+                this.pokemonName = '';
+                this.btnActive = 'primary';
+                this.pokemonList = [...this.pokemonFullList];
+            },
+            showFavoriteList() {
+                this.pokemonName = '';
+                this.btnActive = 'secondary';
+                this.pokemonList = this.pokemonFullList.filter( item => item.cssClass === 'star-yellow' );
             },
             searchPokemon: function () {
-                this.searchStarted = this.pokemonName.length > 0 ? true : false;
-                if (this.searchStarted) {
-                    this.showAll = false;
-                    this.searchResult = this.pokemonList.filter( item => item.name.includes(this.pokemonName) );
-                }else{
-                    this.showAll = true;
+                const searchStarted = this.pokemonName.length > 0;
+                if (searchStarted) {
+                    this.btnActive = '';
+                    this.pokemonList = this.pokemonFullList.filter( item => item.name.includes(this.pokemonName) );
+                } else {
+                    this.showFullList();
                 }
-            },
-            switchShowAll: function (value) {
-                this.pokemonName = '';
-                this.searchStarted = false;
-                this.searchResult = [];
-                this.showAll = value;
             },
             showPokemonInfo: function (pokemon) {
                 this.isLoading = true;
