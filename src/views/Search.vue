@@ -8,7 +8,9 @@
                     v-model="pokemonName" v-on:input="searchPokemon()">
             </div>
             <div v-if="pokemonList.length > 0">
-                <pokemon-item v-for="pokemon in pokemonList" :key="pokemon" :info="pokemon" @show-info="showPokemonInfo">
+                <pokemon-item v-for="pokemon in pokemonList" :key="pokemon" :info="pokemon"
+                    @show-info="showPokemonInfo"
+                    @add-favorite="onPokemonItemChange">
                 </pokemon-item>
             </div>
             <div v-else>
@@ -89,9 +91,15 @@
             showFavoriteList() {
                 this.pokemonName = '';
                 this.btnActive = 'secondary';
-                this.pokemonList = this.pokemonFullList.filter( item => item.cssClass === 'star-yellow' );
+                this.pokemonList = this.$store.state.favoriteList;
             },
-            searchPokemon: function () {
+            onPokemonItemChange() {
+                if (this.btnActive === 'secondary') {
+                    this.pokemonList = this.$store.state.favoriteList;
+                    return
+                }
+            },
+            searchPokemon() {
                 const searchStarted = this.pokemonName.length > 0;
                 if (searchStarted) {
                     this.btnActive = '';
@@ -100,7 +108,7 @@
                     this.reset();
                 }
             },
-            showPokemonInfo: function (pokemon) {
+            showPokemonInfo(pokemon) {
                 this.isLoading = true;
                 new PokedexService().getPokemonDetail(pokemon.name).then( 
                     (response) => {
