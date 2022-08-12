@@ -52,9 +52,15 @@ export default {
     showFavoriteList() {
       this.pokemonName = '';
       this.btnActive = 'secondary';
-      this.pokemonList = this.pokemonFullList.filter(item => item.cssClass === 'star-yellow');
+      this.pokemonList = this.$store.state.favoriteList;
     },
-    searchPokemon: function () {
+    onPokemonItemChange() {
+      if (this.btnActive === 'secondary') {
+          this.pokemonList = this.$store.state.favoriteList;
+          return
+      }
+  },
+    searchPokemon() {
       const searchStarted = this.pokemonName.length > 0;
       if (searchStarted) {
         this.btnActive = '';
@@ -63,7 +69,7 @@ export default {
         this.reset();
       }
     },
-    showPokemonInfo: function (pokemon) {
+    showPokemonInfo(pokemon) {
       this.isLoading = true;
       new PokedexService().getPokemonDetail(pokemon.name).then(
         (response) => {

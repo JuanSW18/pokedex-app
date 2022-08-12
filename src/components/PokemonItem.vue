@@ -28,7 +28,14 @@
         this.$emit('showInfo', this.info)
       },
       addFavorite: function () {
-        this.pokemon.cssClass = (this.pokemon.cssClass === 'star-default') ? 'star-yellow' : 'star-default';
+        if (this.pokemon.cssClass === 'star-default') {
+          this.pokemon.cssClass = 'star-yellow';
+          this.$store.commit('savePokemon', this.pokemon);
+        } else {
+          this.pokemon.cssClass = 'star-default';
+          this.$store.commit('removePokemon', this.pokemon);
+        }
+        this.$emit('addFavorite');
       },
     }
   }

@@ -7,7 +7,9 @@
         v-model="pokemonName" v-on:input="searchPokemon()">
     </div>
     <div v-if="pokemonList.length > 0">
-      <pokemon-item v-for="pokemon in pokemonList" :key="pokemon" :info="pokemon" @show-info="showPokemonInfo">
+      <pokemon-item v-for="pokemon in pokemonList" :key="pokemon" :info="pokemon"
+        @show-info="showPokemonInfo"
+        @add-favorite="onPokemonItemChange">
       </pokemon-item>
     </div>
     <div v-else>
