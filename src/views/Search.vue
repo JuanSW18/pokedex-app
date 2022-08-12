@@ -7,13 +7,18 @@
                 <input type="text" class="form-control border-0" aria-label="Pokemon name" placeholder="Search"
                     v-model="pokemonName" v-on:input="searchPokemon()">
             </div>
-            <div>
+            <div v-if="pokemonList.length > 0">
                 <pokemon-item v-for="pokemon in pokemonList" :key="pokemon" :info="pokemon" @show-info="showPokemonInfo">
                 </pokemon-item>
             </div>
+            <div v-else>
+                <h1>Uh-oh!</h1>
+                <p>You look lost on your journey!</p>
+                <button class="btn rounded-pill btn-danger" @click="reset()">Go back home</button>
+            </div>
         </div>
     </div>
-    <div class="btn-group footer">
+    <div class="btn-group footer" v-if="pokemonList.length > 0">
         <button class="btn rounded-pill me-4" :class="isBtnActive('primary')" @click="showFullList()">
             <img src="../assets/ic-all.png" alt="all"/><span>All</span>
         </button>
@@ -67,6 +72,11 @@
         },
         computed: {},
         methods: {
+            reset() {
+                this.pokemonName = '';
+                this.btnActive = '';
+                this.pokemonList = [...this.pokemonFullList];
+            },
             isBtnActive(btn) {
                 const cssStyle = (this.btnActive === btn) ? 'btn-danger' : 'btn-secondary';
                 return cssStyle;
@@ -87,7 +97,7 @@
                     this.btnActive = '';
                     this.pokemonList = this.pokemonFullList.filter( item => item.name.includes(this.pokemonName) );
                 } else {
-                    this.showFullList();
+                    this.reset();
                 }
             },
             showPokemonInfo: function (pokemon) {
